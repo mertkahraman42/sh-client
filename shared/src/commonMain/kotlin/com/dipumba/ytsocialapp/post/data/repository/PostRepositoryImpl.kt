@@ -1,4 +1,4 @@
-package com.dipumba.ytsocialapp.post.data
+package com.dipumba.ytsocialapp.post.data.repository
 
 import com.dipumba.ytsocialapp.common.data.local.UserPreferences
 import com.dipumba.ytsocialapp.common.data.local.UserSettings
@@ -9,7 +9,7 @@ import com.dipumba.ytsocialapp.common.domain.model.Post
 import com.dipumba.ytsocialapp.common.util.Constants
 import com.dipumba.ytsocialapp.common.util.DispatcherProvider
 import com.dipumba.ytsocialapp.common.util.Result
-import com.dipumba.ytsocialapp.post.domain.PostRepository
+import com.dipumba.ytsocialapp.post.domain.repository.PostRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.withContext
@@ -38,9 +38,9 @@ internal class PostRepositoryImpl(
                 val userData = userPreferences.getUserData()
                 val likeParams = LikeParams(postId = postId, userId = userData.id)
 
-                val apiResponse = if (shouldLike){
+                val apiResponse = if (shouldLike) {
                     postApiService.likePost(userData.token, likeParams)
-                }else{
+                } else {
                     postApiService.dislikePost(userData.token, likeParams)
                 }
 
@@ -75,8 +75,8 @@ internal class PostRepositoryImpl(
 
     private suspend fun fetchPosts(
         apiCall: suspend (UserSettings) -> PostsApiResponse
-    ): Result<List<Post>>{
-        return withContext(dispatcher.io){
+    ): Result<List<Post>> {
+        return withContext(dispatcher.io) {
             try {
                 val currentUserData = userPreferences.getUserData()
                 val apiResponse = apiCall(currentUserData)
@@ -85,32 +85,41 @@ internal class PostRepositoryImpl(
                     HttpStatusCode.OK -> {
                         Result.Success(data = apiResponse.data.posts.map { it.toDomainPost() })
                     }
+
                     else -> {
                         Result.Error(message = Constants.UNEXPECTED_ERROR)
                     }
                 }
-            }catch (ioException: IOException) {
+            } catch (ioException: IOException) {
                 Result.Error(message = Constants.NO_INTERNET_ERROR)
             } catch (exception: Throwable) {
                 Result.Error(message = "${exception.cause}")
             }
         }
     }
+
+    override suspend fun getPost(postId: Long): Result<Post> {
+        return withContext(dispatcher.io) {
+            try {
+                val userData = userPreferences.getUserData()
+
+                val apiResponse = postApiService.getPost(
+                    token = userData.token,
+                    currentUserId = userData.id,
+                    postId = postId
+                )
+
+                // TODO: Post is force unwrap
+                if (apiResponse.code == HttpStatusCode.OK) {
+                    Result.Success(data = apiResponse.data.post!!.toDomainPost())
+                } else {
+                    Result.Error(message = apiResponse.data.message!!)
+                }
+            } catch (ioException: IOException) {
+                Result.Error(message = Constants.NO_INTERNET_ERROR)
+            } catch (exception: Throwable) {
+                Result.Error(message = Constants.UNEXPECTED_ERROR)
+            }
+        }
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

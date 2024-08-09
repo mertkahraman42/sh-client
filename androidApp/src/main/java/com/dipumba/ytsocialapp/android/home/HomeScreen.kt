@@ -28,7 +28,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.dipumba.ytsocialapp.android.R
 import com.dipumba.ytsocialapp.android.common.components.PostListItem
-import com.dipumba.ytsocialapp.android.common.dummy_data.SamplePost
 import com.dipumba.ytsocialapp.android.common.theming.LargeSpacing
 import com.dipumba.ytsocialapp.android.common.theming.MediumSpacing
 import com.dipumba.ytsocialapp.android.common.theming.SocialAppTheme
@@ -61,7 +60,7 @@ fun HomeScreen(
 
             if (layoutInfo.totalItemsCount == 0) {
                 false
-            }else{
+            } else {
                 val lastVisibleItem = visibleItemsInfo.last()
                 (lastVisibleItem.index + 1 == layoutInfo.totalItemsCount)
             }
@@ -72,18 +71,18 @@ fun HomeScreen(
         modifier = modifier
             .fillMaxSize()
             .pullRefresh(state = pullRefreshState)
-    ){
+    ) {
         LazyColumn(
             modifier = modifier
                 .fillMaxSize(),
             state = listState
         ) {
-            if (onBoardingUiState.shouldShowOnBoarding){
+            if (onBoardingUiState.shouldShowOnBoarding) {
                 item {
                     OnBoardingSection(
                         users = onBoardingUiState.followableUsers,
-                        onUserClick = {onProfileNavigation(it.id)},
-                        onFollowButtonClick = {_, user ->
+                        onUserClick = { onProfileNavigation(it.id) },
+                        onFollowButtonClick = { _, user ->
                             onUiAction(
                                 HomeUiAction.FollowUserAction(
                                     user
@@ -104,7 +103,7 @@ fun HomeScreen(
                 }
             }
 
-            items(items = postsFeedUiState.posts, key = { post -> post.postId }) {post ->
+            items(items = postsFeedUiState.posts, key = { post -> post.postId }) { post ->
                 PostListItem(
                     post = post,
                     onPostClick = { onPostDetailNavigation(it) },

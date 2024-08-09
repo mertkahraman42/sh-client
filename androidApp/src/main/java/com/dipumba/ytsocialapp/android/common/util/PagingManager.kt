@@ -15,7 +15,7 @@ class DefaultPagingManager<Model>(
     private inline val onLoadStateChange: (isLoading: Boolean) -> Unit
 ): PagingManager<Model>{
 
-    private var currentPage = Constants.INITIAL_PAGE_NUMBER
+    private var currentPageNumber = Constants.INITIAL_PAGE_NUMBER
     private var isLoading = false
 
     override suspend fun loadItems() {
@@ -24,22 +24,22 @@ class DefaultPagingManager<Model>(
         onLoadStateChange(true)
         delay(3_000)
 
-        val result = onRequest(currentPage)
+        val result = onRequest(currentPageNumber)
         isLoading = false
         onLoadStateChange(false)
 
         when(result){
             is Result.Error -> {
-                onError(result.message ?: Constants.UNEXPECTED_ERROR_MESSAGE, currentPage)
+                onError(result.message ?: Constants.UNEXPECTED_ERROR_MESSAGE, currentPageNumber)
             }
             is Result.Success -> {
-                onSuccess(result.data!!, currentPage)
-                currentPage += 1
+                onSuccess(result.data!!, currentPageNumber)
+                currentPageNumber += 1
             }
         }
     }
 
     override fun reset() {
-        currentPage = Constants.INITIAL_PAGE_NUMBER
+        currentPageNumber = Constants.INITIAL_PAGE_NUMBER
     }
 }

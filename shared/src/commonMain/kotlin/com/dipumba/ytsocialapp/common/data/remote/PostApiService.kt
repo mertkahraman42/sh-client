@@ -2,6 +2,7 @@ package com.dipumba.ytsocialapp.common.data.remote
 
 import com.dipumba.ytsocialapp.common.data.model.LikeApiResponse
 import com.dipumba.ytsocialapp.common.data.model.LikeParams
+import com.dipumba.ytsocialapp.common.data.model.PostApiResponse
 import com.dipumba.ytsocialapp.common.data.model.PostsApiResponse
 import com.dipumba.ytsocialapp.common.util.Constants
 import io.ktor.client.call.body
@@ -67,5 +68,18 @@ internal class PostApiService : KtorApi() {
             setToken(token = token)
         }
         return PostsApiResponse(code = httpResponse.status, data = httpResponse.body())
+    }
+
+    suspend fun getPost(
+        token: String,
+        postId: Long,
+        currentUserId: Long
+    ): PostApiResponse {
+        val httpResponse = client.get {
+            endPoint(path = "/post/$postId")
+            parameter(key = Constants.CURRENT_USER_ID_PARAMETER, value = currentUserId)
+            setToken(token = token)
+        }
+        return PostApiResponse(code = httpResponse.status, data = httpResponse.body())
     }
 }

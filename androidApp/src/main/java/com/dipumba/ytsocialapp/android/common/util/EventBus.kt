@@ -7,7 +7,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 
 
 object EventBus {
-    private val _events = MutableSharedFlow<Event>(extraBufferCapacity = EVENT_BUS_BUFFER_CAPACITY)
+    private val _events = MutableSharedFlow<Event>(
+        extraBufferCapacity = EVENT_BUS_BUFFER_CAPACITY
+    )
     val events = _events.asSharedFlow()
 
     suspend fun send(event: Event) {

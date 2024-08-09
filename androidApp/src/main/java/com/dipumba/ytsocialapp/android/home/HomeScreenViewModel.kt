@@ -58,7 +58,7 @@ class HomeScreenViewModel(
         homeRefreshState = homeRefreshState.copy(isRefreshing = true)
 
         viewModelScope.launch {
-            delay(1000)
+            delay(1000) // Just to visualize loading states better
 
             val onboardingDeferred = async {
                 getFollowableUsersUseCase()

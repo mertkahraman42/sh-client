@@ -48,7 +48,8 @@ internal class ProfileRepositoryImpl(
                     emit(Result.Error(message = "Error: ${apiResponse.data.message}"))
                 }
             }
-        }.catch { exception ->
+        }
+            .catch { exception ->
             emit(Result.Error(message = "Error: ${exception.message}"))
         }.flowOn(dispatcher.io)
     }

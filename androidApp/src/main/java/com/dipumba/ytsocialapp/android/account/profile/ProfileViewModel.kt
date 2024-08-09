@@ -62,6 +62,7 @@ class ProfileViewModel(
     }
 
     private suspend fun fetchProfilePosts(profileId: Long) {
+        // TODO We shouldn't wait for this to load posts
         if (profilePostsUiState.isLoading || profilePostsUiState.posts.isNotEmpty()) return
 
         if (!::pagingManager.isInitialized){
